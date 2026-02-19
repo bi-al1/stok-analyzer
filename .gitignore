@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# macOS
+.DS_Store
+
+# 一時ファイル
+*.tmp
+output_*.json
+
+# データファイルはGit管理する（Renderの永続化のため）
+# watchlist/data/watchlist.json
+# portfolio-health/data/portfolio.json
+
+# キャッシュ
+.cache/

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企業リサーチダッシュボード - アジアパイルホールディングス (5288)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-card: #1a1d2e;
+    --border: #2a2e45;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8b90a5;
+    --text-muted: #5a5f78;
+    --accent-blue: #4a9eff;
+    --accent-green: #34d399;
+    --accent-red: #f87171;
+    --accent-yellow: #fbbf24;
+    --accent-purple: #a78bfa;
+    --accent-orange: #fb923c;
+    --positive-bg: #064e3b;
+    --negative-bg: #450a0a;
+    --gauge-bg: #2a2e45;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-primary); color: var(--text-primary);
+    font-family: 'Segoe UI','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
+    line-height: 1.6; padding: 24px; min-height: 100vh;
+  }
+  .dashboard { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1d2e 0%, #252a40 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px 32px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap;
+  }
+  .header-left h1 { font-size: 28px; font-weight: 700; }
+  .header-left h1 .code { color: var(--text-secondary); font-weight: 400; font-size: 20px; margin-left: 8px; }
+  .header-meta { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .meta-tag {
+    background: rgba(74,158,255,0.1); color: var(--accent-blue);
+    padding: 4px 12px; border-radius: 20px; font-size: 13px;
+    border: 1px solid rgba(74,158,255,0.2);
+  }
+  .header-catchphrase {
+    background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 8px; padding: 12px 20px; max-width: 420px; text-align: right;
+  }
+  .header-catchphrase p { color: var(--accent-purple); font-size: 15px; font-weight: 500; }
+  .header-catchphrase .subtitle { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+
+  /* Card */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(74,158,255,0.3); }
+  .card-title {
+    font-size: 14px; color: var(--text-secondary); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon { font-size: 16px; }
+  .full-width { margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 20px; }
+
+  /* Business Model */
+  .biz-model { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .biz-what { font-size: 14px; color: var(--text-primary); line-height: 1.8; }
+  .biz-what p { margin-bottom: 12px; }
+  .biz-highlights { display: flex; flex-direction: column; gap: 10px; }
+  .biz-highlight-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(74,158,255,0.06); border: 1px solid rgba(74,158,255,0.12);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .biz-highlight-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .biz-highlight-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .biz-highlight-text strong { color: var(--text-primary); display: block; margin-bottom: 2px; font-size: 13px; }
+  .biz-model-type { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .biz-tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .biz-tag-btob { background: rgba(74,158,255,0.15); color: var(--accent-blue); }
+  .biz-tag-stock { background: rgba(52,211,153,0.15); color: var(--accent-green); }
+  .biz-tag-hybrid { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+
+  /* Score */
+  .score-section { display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: center; }
+  .overall-score { text-align: center; }
+  .score-circle {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: conic-gradient(var(--accent-blue) 0deg, var(--accent-purple) calc(var(--score-pct)*3.6deg), var(--gauge-bg) calc(var(--score-pct)*3.6deg));
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;
+  }
+  .score-circle-inner {
+    width: 110px; height: 110px; border-radius: 50%; background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .score-value { font-size: 36px; font-weight: 700; line-height: 1; }
+  .score-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .rank-badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-top: 8px; }
+  .rank-s { background: rgba(251,191,36,0.2); color: var(--accent-yellow); }
+  .rank-a { background: rgba(52,211,153,0.2); color: var(--accent-green); }
+  .radar-container { position: relative; max-height: 280px; display: flex; justify-content: center; }
+
+  /* Gauge */
+  .gauge-card { text-align: center; position: relative; }
+  .svg-gauge { width: 160px; height: 100px; margin: 0 auto; }
+  .gauge-value-text { font-size: 28px; font-weight: 700; }
+  .gauge-unit { font-size: 14px; color: var(--text-secondary); }
+  .gauge-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .gauge-status { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; margin-top: 6px; }
+  .status-good { background: rgba(5,150,105,0.2); color: var(--accent-green); }
+  .status-warn { background: rgba(251,191,36,0.2); color: var(--accent-yellow); }
+
+  /* Tooltip (for gauges & segments) */
+  .has-tooltip { position: relative; cursor: help; }
+  .tooltip {
+    visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%); background: #2d3250;
+    color: var(--text-primary); padding: 10px 14px; border-radius: 8px;
+    font-size: 12px; line-height: 1.5; width: 280px; z-index: 100;
+    border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transition: opacity 0.2s, visibility 0.2s; pointer-events: none;
+  }
+  .tooltip::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 6px solid transparent; border-top-color: #2d3250;
+  }
+  .has-tooltip:hover .tooltip { visibility: visible; opacity: 1; }
+  .tooltip-tag { color: var(--accent-purple); font-weight: 600; display: block; margin-bottom: 4px; font-size: 11px; }
+
+  /* Segments */
+  .segments-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+  .segment-chart-container { position: relative; max-height: 240px; display: flex; justify-content: center; }
+  .segment-bars { display: flex; flex-direction: column; gap: 12px; }
+  .segment-bar-item { display: flex; align-items: center; gap: 12px; }
+  .segment-bar-label { font-size: 13px; color: var(--text-secondary); min-width: 140px; text-align: right; }
+  .segment-bar-track { flex: 1; height: 22px; background: var(--gauge-bg); border-radius: 11px; overflow: hidden; }
+  .segment-bar-fill {
+    height: 100%; border-radius: 11px; display: flex; align-items: center;
+    justify-content: flex-end; padding-right: 8px; font-size: 11px; font-weight: 600;
+    color: #fff; min-width: 40px; transition: width 0.8s ease;
+  }
+
+  /* Positive / Negative */
+  .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .pn-column-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .pn-card { border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; cursor: default; transition: transform 0.15s; }
+  .pn-card:hover { transform: translateY(-1px); }
+  .pn-positive { background: var(--positive-bg); border: 1px solid rgba(5,150,105,0.3); }
+  .pn-negative { background: var(--negative-bg); border: 1px solid rgba(220,38,38,0.3); }
+  .pn-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .pn-card-title { font-size: 14px; font-weight: 600; flex: 1; }
+  .pn-positive .pn-card-title { color: var(--accent-green); }
+  .pn-negative .pn-card-title { color: var(--accent-red); }
+  .pn-badge { font-size: 11px; padding: 2px 8px; border-radius: 8px; white-space: nowrap; margin-left: 8px; }
+  .badge-high { background: rgba(251,191,36,0.2); color: var(--accent-yellow); }
+  .badge-mid { background: rgba(74,158,255,0.2); color: var(--accent-blue); }
+  .badge-low { background: rgba(139,144,165,0.2); color: var(--text-secondary); }
+  .pn-card-source { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .pn-card-body { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .pn-card-tooltip {
+    background: rgba(0,0,0,0.2); border-radius: 6px; margin-top: 8px;
+    padding: 10px 12px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+  }
+  .pn-card-tooltip .tip-label { color: var(--accent-purple); font-weight: 600; display: block; margin-bottom: 2px; font-size: 11px; }
+  .stars { color: var(--accent-yellow); font-size: 12px; letter-spacing: 1px; }
+
+  /* Summary */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .summary-list { list-style: none; }
+  .summary-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; display: flex; align-items: flex-start; gap: 8px; }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list .icon { flex-shrink: 0; margin-top: 2px; }
+  .summary-verdict {
+    background: rgba(74,158,255,0.08); border: 1px solid rgba(74,158,255,0.2);
+    border-radius: 8px; padding: 16px 20px; margin-top: 20px; font-size: 14px; line-height: 1.7;
+  }
+  .summary-verdict .verdict-title { color: var(--accent-blue); font-weight: 600; margin-bottom: 8px; font-size: 13px; }
+  .footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px; margin-top: 20px; }
+
+  @media (max-width: 768px) {
+    .grid-3, .pn-grid, .segments-grid, .summary-grid, .biz-model { grid-template-columns: 1fr; }
+    .score-section { grid-template-columns: 1fr; }
+    .header { flex-direction: column; }
+    .header-catchphrase { text-align: left; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>アジアパイルホールディングス <span class="code">(5288)</span></h1>
+      <div class="header-meta">
+        <span class="meta-tag">ガラス・土石製品</span>
+        <span class="meta-tag">東証プライム</span>
+        <span class="meta-tag">2026/02/11 調査</span>
+        <span class="meta-tag">3Q決算 2026/02/10発表</span>
+      </div>
+    </div>
+    <div class="header-catchphrase">
+      <p>「建物を支える"見えない柱"を作る、基礎杭の国内トップ企業」</p>
+      <div class="subtitle">ひと言で言うと？</div>
+    </div>
+  </div>
+
+  <!-- BUSINESS MODEL -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">🏢</span> この会社は何をしている？</div>
+    <div class="biz-model">
+      <div class="biz-what">
+        <p>アジアパイルHDは、<strong>ビルやマンション、橋などの建物を地面にしっかり固定するための「杭（くい）」を作って打ち込む会社</strong>です。建物が沈んだり傾いたりしないように、地面の深いところにある硬い地盤まで杭を刺して支える、いわば「建物の土台屋さん」。</p>
+        <p>中核子会社の<strong>ジャパンパイル</strong>は、コンクリート杭の製造・施工で国内シェア約28%のトップ企業。業界で唯一、「既製杭」（工場で作った杭を現場で打つ）と「場所打ち杭」（現場で直接コンクリートを流し込む）の両方を手がける<strong>「二刀流」</strong>が最大の強みです。</p>
+        <p>海外はベトナムの<strong>Phan Vu社</strong>を通じて東南アジアに進出中。ベトナムの経済成長と建設ラッシュを取り込んで、海外事業の利益が急回復しています。</p>
+        <div class="biz-model-type">
+          <span class="biz-tag biz-tag-btob">BtoB（ゼネコン向け）</span>
+          <span class="biz-tag biz-tag-hybrid">製造＋施工一貫</span>
+          <span class="biz-tag biz-tag-stock">4社寡占市場</span>
+        </div>
+      </div>
+      <div class="biz-highlights">
+        <div class="biz-highlight-item">
+          <span class="biz-highlight-icon">🏗️</span>
+          <div class="biz-highlight-text">
+            <strong>国内事業（売上の約85%）</strong>
+            コンクリート杭の製造と施工。大径・大規模工事へのシフトで単価向上中。Smart-MAGNUM工法が主力。
+          </div>
+        </div>
+        <div class="biz-highlight-item">
+          <span class="biz-highlight-icon">🌏</span>
+          <div class="biz-highlight-text">
+            <strong>海外事業（売上の約15%）</strong>
+            ベトナムのPhan Vu社が中心。稼働改善と大型案件の受注増で収益が大幅改善。ASEAN展開を計画中。
+          </div>
+        </div>
+        <div class="biz-highlight-item">
+          <span class="biz-highlight-icon">🤝</span>
+          <div class="biz-highlight-text">
+            <strong>M&A（高山基礎工業を取得）</strong>
+            2026年に高山基礎工業を連結子会社化。施工能力と顧客基盤を拡大し、グループ総合力を強化。
+          </div>
+        </div>
+        <div class="biz-highlight-item">
+          <span class="biz-highlight-icon">📊</span>
+          <div class="biz-highlight-text">
+            <strong>市場ポジション</strong>
+            コンクリートパイル市場は4社寡占（アジアパイル・三谷セキサン・日本コンクリート・トーヨーアサノ）。競争は穏やかで利益を確保しやすい構造。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE + RADAR -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">📊</span> KabuMart スコア</div>
+    <div class="score-section">
+      <div class="overall-score">
+        <div class="score-circle" style="--score-pct: 85">
+          <div class="score-circle-inner">
+            <div class="score-value">8.5</div>
+            <div class="score-label">総合スコア</div>
+          </div>
+        </div>
+        <span class="rank-badge rank-a">A+ ランク</span>
+      </div>
+      <div class="radar-container">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCIAL GAUGES -->
+  <div class="grid-3">
+    <!-- PER -->
+    <div class="card gauge-card has-tooltip">
+      <div class="card-title"><span class="icon">💹</span> 予想PER</div>
+      <svg class="svg-gauge" viewBox="0 0 160 100">
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#2a2e45" stroke-width="12" stroke-linecap="round"/>
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#34d399" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="204" stroke-dashoffset="60" />
+      </svg>
+      <div class="gauge-value-text" style="margin-top:-20px">9.2<span class="gauge-unit">倍</span></div>
+      <div class="gauge-label">業種平均: 約13倍</div>
+      <span class="gauge-status status-good">かなり割安</span>
+      <div class="tooltip">
+        <span class="tooltip-tag">つまりどういうこと？</span>
+        PERは「今の利益で何年分の値段がついてるか」という指標。9.2倍は業界平均13倍と比べてかなり低い。つまり利益の割に株価がまだ安くて、お買い得感がある状態。
+      </div>
+    </div>
+
+    <!-- ROE -->
+    <div class="card gauge-card has-tooltip">
+      <div class="card-title"><span class="icon">⚡</span> ROE（予想）</div>
+      <svg class="svg-gauge" viewBox="0 0 160 100">
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#2a2e45" stroke-width="12" stroke-linecap="round"/>
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#4a9eff" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="204" stroke-dashoffset="80" />
+      </svg>
+      <div class="gauge-value-text" style="margin-top:-20px">11.7<span class="gauge-unit">%</span></div>
+      <div class="gauge-label">目安: 10%以上 / 前期実績: 5.2%</div>
+      <span class="gauge-status status-good">改善中</span>
+      <div class="tooltip">
+        <span class="tooltip-tag">つまりどういうこと？</span>
+        ROEは「株主のお金をどれだけ効率よく増やせているか」の指標。前期は5.2%と低かったけど、今期は業績回復で11.7%に急改善する見込み。会社の目標9%も超えている。
+      </div>
+    </div>
+
+    <!-- 自己資本比率 -->
+    <div class="card gauge-card has-tooltip">
+      <div class="card-title"><span class="icon">🛡️</span> 自己資本比率</div>
+      <svg class="svg-gauge" viewBox="0 0 160 100">
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#2a2e45" stroke-width="12" stroke-linecap="round"/>
+        <path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#a78bfa" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="204" stroke-dashoffset="100" />
+      </svg>
+      <div class="gauge-value-text" style="margin-top:-20px">48.9<span class="gauge-unit">%</span></div>
+      <div class="gauge-label">目安: 40%以上</div>
+      <span class="gauge-status status-good">健全</span>
+      <div class="tooltip">
+        <span class="tooltip-tag">つまりどういうこと？</span>
+        自己資本比率は「借金に頼らず自分のお金でどれだけ経営できているか」の指標。48.9%は目安の40%を超えていて、財務的に安心できる水準。有利子負債も減少傾向。
+      </div>
+    </div>
+  </div>
+
+  <!-- SEGMENTS -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">🏗️</span> 事業セグメント構成（FY2026 中間期ベース）</div>
+    <div class="segments-grid">
+      <div class="segment-chart-container">
+        <canvas id="segmentDonut"></canvas>
+      </div>
+      <div class="segment-bars">
+        <div class="segment-bar-item has-tooltip">
+          <span class="segment-bar-label">国内事業</span>
+          <div class="segment-bar-track">
+            <div class="segment-bar-fill" style="width:75%; background: linear-gradient(90deg, #4a9eff, #6cb4ff);">10.1%</div>
+          </div>
+          <div class="tooltip" style="left:70%">
+            <span class="tooltip-tag">つまりどういうこと？</span>
+            営業利益率10.1%は「売上100円のうち10.1円が本業の利益」ということ。大径杭へのシフトや施工効率の向上で、利益率が大幅に改善中。前期は赤字に近かったところからのV字回復。
+          </div>
+        </div>
+        <div class="segment-bar-item has-tooltip">
+          <span class="segment-bar-label">海外事業</span>
+          <div class="segment-bar-track">
+            <div class="segment-bar-fill" style="width:65%; background: linear-gradient(90deg, #34d399, #6ee7b7);">8.5%</div>
+          </div>
+          <div class="tooltip" style="left:70%">
+            <span class="tooltip-tag">つまりどういうこと？</span>
+            ベトナムのPhan Vu社が大型案件の受注増と稼働率改善で利益率が大幅改善。東南アジアの建設ラッシュが追い風。ミャンマーは撤退方針で損失リスクが縮小。
+          </div>
+        </div>
+        <div style="text-align:right; margin-top:8px;">
+          <span style="font-size:11px; color:var(--text-muted);">← セグメント別 営業利益率（推定）</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSITIVE / NEGATIVE -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">⚖️</span> ポジティブ / ネガティブ分析</div>
+    <div class="pn-grid">
+      <!-- Positive -->
+      <div>
+        <div class="pn-column-title" style="color: var(--accent-green);">🟢 ポジティブ</div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">通期業績予想を上方修正（営業利益+5.6%）</span>
+            <span class="pn-badge badge-high">インパクト大</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐⭐</span> 持続的 ・ 達成見込み高</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            営業利益の予想が90億→95億円に上方修正。純利益も57億→65億円へ。前期（営業利益43億円）の2倍以上の利益を稼ぐ見込み。中期経営計画の2029年目標（営業利益85億円）を、わずか2年目で大幅に超過達成している。会社の実力が想定以上に上がっている証拠。
+          </div>
+        </div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">高山基礎工業を連結子会社化</span>
+            <span class="pn-badge badge-high">インパクト大</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐⭐</span> 持続的 ・ 達成済み</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            別の基礎工事会社を買収して仲間に加えた。これにより施工できる案件の数が増え、対応できるエリアも広がる。杭業界はもともと4社の寡占市場なので、グループを大きくすることでシェアをさらに固められる。
+          </div>
+        </div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">ベトナム子会社Phan Vuの収益が大幅改善</span>
+            <span class="pn-badge badge-high">インパクト大</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐⭐</span> 持続的 ・ 実現済み</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            ベトナムの子会社が工場の稼働率を上げ、さらに大きな建設案件をたくさん受注できるようになった。東南アジアは経済成長で建物がどんどん建っているから、この流れは今後も続きそう。国内市場が将来縮小しても海外で稼げる体制が整いつつある。
+          </div>
+        </div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">増配（年間配当50円、利回り3.4%）</span>
+            <span class="pn-badge badge-mid">インパクト中</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐</span> 持続的 ・ 達成済み</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            前期の年間配当45円から50円に増額。業績の回復に合わせて株主への還元も増やしている。配当利回り3.4%は銀行預金よりずっと高い。「稼いだお金をちゃんと株主に返す」姿勢が見える。
+          </div>
+        </div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">「二刀流」で業界唯一のポジション</span>
+            <span class="pn-badge badge-high">インパクト大</span>
+          </div>
+          <div class="pn-card-source">📌 WebSearch</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐⭐</span> 持続的 ・ 構造的強み</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            杭工事には「工場で作った杭を打つ方法」と「現場で直接杭を作る方法」の2種類がある。他社はどちらか片方だけだが、ジャパンパイルは両方できる唯一の会社。お客さん（ゼネコン）からすると「ここに頼めばどんな現場でも対応できる」ので、選ばれやすい。これは簡単に真似できない強み。
+          </div>
+        </div>
+
+        <div class="pn-card pn-positive">
+          <div class="pn-card-header">
+            <span class="pn-card-title">PER 9.2倍で中計目標を2年目で超過達成</span>
+            <span class="pn-badge badge-mid">インパクト中</span>
+          </div>
+          <div class="pn-card-source">📌 WebSearch</div>
+          <div class="pn-card-body"><span class="stars">⭐⭐</span> 一時的〜持続的 ・ 要検証</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            5年計画の最終目標（営業利益85億円）をわずか2年目で超えたのに、PERはまだ9.2倍と安い。市場がこの実力に気づいていない可能性がある。ただし建設業は景気に左右されるので「来年も同じ利益が出るか」は慎重に見る必要あり。
+          </div>
+        </div>
+      </div>
+
+      <!-- Negative -->
+      <div>
+        <div class="pn-column-title" style="color: var(--accent-red);">🔴 ネガティブ</div>
+
+        <div class="pn-card pn-negative">
+          <div class="pn-card-header">
+            <span class="pn-card-title">大型案件で着工遅延・設計変更が発生</span>
+            <span class="pn-badge badge-high">深刻度 中</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body">一時的 ・ 要注意</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            大きな建設プロジェクトで工事の開始が遅れたり、設計のやり直しが発生している。その分の売上が来期にずれ込む。ただし案件自体がなくなったわけではないので、「売上が消えた」のではなく「先送りされた」だけ。建設業ではよくあること。
+          </div>
+        </div>
+
+        <div class="pn-card pn-negative">
+          <div class="pn-card-header">
+            <span class="pn-card-title">固定資産の撤去工事に遅延が発生</span>
+            <span class="pn-badge badge-mid">深刻度 低</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body">一時的 ・ 許容可</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            生産体制を効率化するために古い設備を撤去する工事が予定より遅れている。通期予想の修正要因にはなったが、むしろ「生産体制を良くしようとしている途中」の話。遅れが解消されれば問題なし。
+          </div>
+        </div>
+
+        <div class="pn-card pn-negative">
+          <div class="pn-card-header">
+            <span class="pn-card-title">固定資産の減損損失を計上（47百万円）</span>
+            <span class="pn-badge badge-low">深刻度 低</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart</div>
+          <div class="pn-card-body">一時的 ・ 許容可</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            持っている設備や土地の価値が下がったので、帳簿上の金額を引き下げた。47百万円（約4.7億円）は、売上1,150億円の会社にとっては非常に小さな金額。業績への影響はほぼ無視できるレベル。
+          </div>
+        </div>
+
+        <div class="pn-card pn-negative">
+          <div class="pn-card-header">
+            <span class="pn-card-title">新規性スコアがD（2.6）と極端に低い</span>
+            <span class="pn-badge badge-high">深刻度 中</span>
+          </div>
+          <div class="pn-card-source">📌 KabuMart + WebSearch</div>
+          <div class="pn-card-body">構造的 ・ 要注意</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            杭を打つという事業自体が昔からあるものなので、AIやDXのような「新しさ」はない。成長性SSSとの対比で言うと「新しいことはしてないけど、既存事業がめちゃくちゃ伸びている」状態。イノベーション銘柄ではなくバリュー銘柄として見るべき。
+          </div>
+        </div>
+
+        <div class="pn-card pn-negative">
+          <div class="pn-card-header">
+            <span class="pn-card-title">建設資材の高騰と人手不足（2024年問題）</span>
+            <span class="pn-badge badge-high">深刻度 中</span>
+          </div>
+          <div class="pn-card-source">📌 WebSearch</div>
+          <div class="pn-card-body">構造的 ・ 要注意</div>
+          <div class="pn-card-tooltip">
+            <span class="tip-label">つまりどういうこと？</span>
+            建設業界全体で材料費が上がり、働ける人も減っている（残業規制の強化）。ゼネコンが工事の着工に慎重になる傾向があり、杭業界全体の出荷量が前年比8.1%減少。ただしアジアパイルは大型案件にシフトすることで影響を緩和している。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">📝</span> 総合評価</div>
+    <div class="summary-grid">
+      <div>
+        <h3 style="color: var(--accent-green); font-size: 15px; margin-bottom: 12px;">💪 強み</h3>
+        <ul class="summary-list">
+          <li><span class="icon" style="color: var(--accent-green);">●</span> 「二刀流」で業界唯一のポジション。4社寡占の安定市場でシェア約28%のトップ</li>
+          <li><span class="icon" style="color: var(--accent-green);">●</span> 営業利益が前期比2倍超のV字回復。中計5年目標をわずか2年目で超過達成</li>
+          <li><span class="icon" style="color: var(--accent-green);">●</span> ベトナム事業の収益改善とM&A（高山基礎工業）でグループ力を拡大中</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--accent-red); font-size: 15px; margin-bottom: 12px;">⚠️ 懸念点</h3>
+        <ul class="summary-list">
+          <li><span class="icon" style="color: var(--accent-red);">●</span> 建設投資に依存する事業構造。景気後退で受注が大きく減るリスクあり</li>
+          <li><span class="icon" style="color: var(--accent-red);">●</span> 建設資材高騰と人手不足が業界全体の逆風。出荷量は前年比マイナス</li>
+          <li><span class="icon" style="color: var(--accent-red);">●</span> 新規性スコアDが示す通り、イノベーション要素は乏しい。バリュー銘柄としての判断が必要</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="summary-verdict">
+      <div class="verdict-title">🎯 初心者向けまとめ</div>
+      アジアパイルHDは「建物の見えない土台を作る」地味だけど不可欠な仕事をしている会社です。業界唯一の「二刀流」（2種類の杭工法を両方できる）で、4社しかいない寡占市場のトップ。直近の業績はV字回復で、5年計画の目標を2年目で大幅に超えています。PER 9.2倍・配当利回り3.4%と、稼いでいる割にまだ株価が安い「バリュー銘柄」です。ネガティブは主に「工事の遅延」で、案件自体が消えたわけではないので一時的。最大のリスクは建設業界全体の景気依存と人手不足ですが、現時点では大型案件の受注で上手くカバーしています。
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    ※ 投資は自己責任です。このレポートは投資助言ではありません。<br>
+    ※ データ出典：KabuMart、各企業IR資料、Yahoo!ファイナンス、みんかぶ、kabutan、irbank<br>
+    Generated by Claude × KabuMart Analysis Skill | 2026/02/11
+  </div>
+
+</div>
+
+<script>
+// Radar Chart
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: ['成長性\n9.6 (SSS)', '安定性\n8.3 (A+)', '収益性\n8.8 (S)', '余力\n9.3 (SS)', '新規性\n2.6 (D)'],
+    datasets: [{
+      label: 'スコア',
+      data: [96, 83, 88, 93, 26],
+      backgroundColor: 'rgba(251,146,60,0.2)',
+      borderColor: '#fb923c',
+      borderWidth: 2,
+      pointBackgroundColor: '#fb923c',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+    }, {
+      label: '基準ライン (70)',
+      data: [70, 70, 70, 70, 70],
+      backgroundColor: 'transparent',
+      borderColor: 'rgba(251,191,36,0.3)',
+      borderWidth: 1,
+      borderDash: [5, 5],
+      pointRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#8b90a5', font: { size: 11 }, padding: 16, usePointStyle: true, pointStyle: 'circle' }
+      },
+      tooltip: {
+        backgroundColor: '#2d3250', titleColor: '#e8eaf0', bodyColor: '#8b90a5',
+        borderColor: '#2a2e45', borderWidth: 1, padding: 10,
+      }
+    },
+    scales: {
+      r: {
+        beginAtZero: true, max: 100, min: 0,
+        ticks: { stepSize: 20, color: '#5a5f78', backdropColor: 'transparent', font: { size: 10 } },
+        grid: { color: 'rgba(42,46,69,0.8)' },
+        angleLines: { color: 'rgba(42,46,69,0.8)' },
+        pointLabels: { color: '#e8eaf0', font: { size: 12, weight: '500' }, padding: 14 }
+      }
+    }
+  }
+});
+
+// Donut Chart
+const donutCtx = document.getElementById('segmentDonut').getContext('2d');
+new Chart(donutCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['国内事業', '海外事業'],
+    datasets: [{
+      data: [85, 15],
+      backgroundColor: ['#4a9eff', '#34d399'],
+      borderColor: '#1a1d2e',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#8b90a5', font: { size: 12 }, padding: 14, usePointStyle: true, pointStyle: 'circle' }
+      },
+      tooltip: {
+        backgroundColor: '#2d3250', titleColor: '#e8eaf0', bodyColor: '#8b90a5',
+        borderColor: '#2a2e45', borderWidth: 1, padding: 10,
+        callbacks: { label: function(ctx) { return ` ${ctx.label}: 売上の約${ctx.raw}%`; } }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

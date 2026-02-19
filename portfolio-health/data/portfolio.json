@@ -1,0 +1,23 @@
+{
+  "holdings": [
+    {
+      "code": "402A",
+      "name": "アクセルスペースホールディングス",
+      "shares": 100,
+      "avg_cost": 800.0,
+      "purchase_date": "2026-02-18",
+      "note": ""
+    }
+  ],
+  "trade_history": [
+    {
+      "date": "2026-02-18",
+      "code": "402A",
+      "name": "アクセルスペースホールディングス",
+      "action": "buy",
+      "shares": 100,
+      "price": 800.0
+    }
+  ],
+  "updated_at": "2026-02-18T20:46:28.663550"
+}

@@ -1,0 +1,90 @@
+{
+  "watchlist": [
+    {
+      "code": "402A",
+      "name": "アクセルスペースホールディングス",
+      "added_date": "2026-02-18",
+      "note": "KabuMartスコアC(3.1)、宇宙テック",
+      "kabumart_rank": "C",
+      "status": "watching",
+      "per": -9.1,
+      "per_history": [
+        {
+          "date": "2026-02-18",
+          "per": -9.1,
+          "source": "kabumart"
+        }
+      ],
+      "updated_at": "2026-02-18T20:24:48.671475"
+    },
+    {
+      "code": "9984",
+      "name": "ソフトバンクグループ",
+      "added_date": "2026-02-19",
+      "note": "AI投資の旗手",
+      "kabumart_rank": "D",
+      "status": "pending",
+      "per": 45.3,
+      "per_history": [
+        {
+          "date": "2026-02-19",
+          "per": 45.3,
+          "source": "kabumart"
+        }
+      ],
+      "updated_at": "2026-02-19T00:00:00.000000"
+    },
+    {
+      "code": "4755",
+      "name": "楽天グループ",
+      "added_date": "2026-02-19",
+      "note": "モバイル事業黒字化期待",
+      "kabumart_rank": "E",
+      "status": "pending",
+      "per": -12.1,
+      "per_history": [
+        {
+          "date": "2026-02-19",
+          "per": -12.1,
+          "source": "kabumart"
+        }
+      ],
+      "updated_at": "2026-02-19T00:00:00.000000"
+    },
+    {
+      "code": "6861",
+      "name": "キーエンス",
+      "added_date": "2026-02-19",
+      "note": "FA機器の超高収益企業",
+      "kabumart_rank": "SS",
+      "status": "watching",
+      "per": 42.1,
+      "per_history": [
+        {
+          "date": "2026-02-19",
+          "per": 42.1,
+          "source": "kabumart"
+        }
+      ],
+      "updated_at": "2026-02-19T00:00:00.000000"
+    },
+    {
+      "code": "2802",
+      "name": "味の素",
+      "added_date": "2026-02-19",
+      "note": "食品・アミノ酸のグローバル展開",
+      "kabumart_rank": "A",
+      "status": "interested",
+      "per": 25.6,
+      "per_history": [
+        {
+          "date": "2026-02-19",
+          "per": 25.6,
+          "source": "kabumart"
+        }
+      ],
+      "updated_at": "2026-02-19T00:00:00.000000"
+    }
+  ],
+  "updated_at": "2026-02-18T23:05:08.711259"
+}
