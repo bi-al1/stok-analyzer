@@ -13,9 +13,11 @@ venv/
 *.tmp
 output_*.json
 
-# データファイルはGit管理する（Renderの永続化のため）
-# watchlist/data/watchlist.json
-# portfolio-health/data/portfolio.json
-
 # キャッシュ
 .cache/
+
+# 注：以下はGitで管理する（全データの正規保管場所）
+# watchlist/data/watchlist.json     → ウォッチリスト（Render APIが読み書き）
+# portfolio-health/data/portfolio.json → ポートフォリオ（Render APIが読み書き）
+# webapp/data/stocks/*.json         → 分析JSON（Claudeが生成・push）
+# webapp/manifest.json              → 銘柄一覧（update_manifest.pyが更新）

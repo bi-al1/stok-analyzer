@@ -24,7 +24,7 @@ description: >
 ## データ管理
 
 ### 保存先
-GitHubリポジトリ `bi-al1/stock-dashboard` の `data/portfolio.json`
+GitHubリポジトリ `bi-al1/stok-analyzer` の `portfolio-health/data/portfolio.json`
 
 読み書きは全て **Render API（`https://stock-dashboard-rif1.onrender.com`）経由** で行う。
 Claudeが直接JSONを編集したりgit pushしたりする必要はない。
@@ -209,7 +209,7 @@ Claude
   ↓ Render API を呼び出す（curl / fetch）
 Render FastAPI（https://stock-dashboard-rif1.onrender.com）
   ↓ GitHub Contents API を呼び出す
-GitHub（bi-al1/stock-dashboard）の data/portfolio.json を更新・コミット
+GitHub（bi-al1/stok-analyzer）の portfolio-health/data/portfolio.json を更新・コミット
   ↓
 ブラウザで「更新」ボタンを押すと最新データが反映される
 ```
@@ -220,7 +220,7 @@ GitHub（bi-al1/stock-dashboard）の data/portfolio.json を更新・コミッ�
 
 ## 技術仕様
 
-- データ：`bi-al1/stock-dashboard` リポジトリの `data/portfolio.json`（GitHub管理）
+- データ：`bi-al1/stok-analyzer` リポジトリの `portfolio-health/data/portfolio.json`（GitHub管理）
 - 株価取得・ヘルスチェック：Render FastAPI が yfinance で実行（`GET /api/healthcheck`）
 - Webダッシュボード：`https://stock-dashboard-pi-navy.vercel.app`（Vercel）
 - バックエンドAPI：`https://stock-dashboard-rif1.onrender.com`（Render）
