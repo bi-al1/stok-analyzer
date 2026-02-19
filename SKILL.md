@@ -112,10 +112,10 @@ verdict:       強み3つ、懸念3つ、初心者向けまとめ
 
 ### Step 5：分析JSONの生成・保存・push
 
-**HTMLは生成しない。** 分析結果は `webapp/data/stocks/{コード}.json` に保存する。
-表示は `webapp/frontend/stocks/detail.html` が動的に読み込んで行う（1枚で全銘柄に対応）。
+**HTMLは生成しない。** 分析結果は `../stock-dashboard/data/stocks/{コード}.json` に保存する。
+表示は `../stock-dashboard/frontend/stocks/detail.html` が動的に読み込んで行う（1枚で全銘柄に対応）。
 
-**保存先：** `webapp/data/stocks/{銘柄コード}.json`（例：`402A.json`）
+**保存先：** `../stock-dashboard/data/stocks/{銘柄コード}.json`
 
 **JSONの構造（必須フィールド）：**
 - `company`：企業名、コード、業種、市場、調査日
@@ -129,11 +129,9 @@ verdict:       強み3つ、懸念3つ、初心者向けまとめ
 - `has_yfinance`, `has_websearch`, `has_kabumart`：データソースフラグ
 - `links`：参考URLリスト
 
-**詳細なJSONスキーマは `webapp/data/stocks/402A.json` を参照（実例）。**
-
 生成後に以下を必ず実行する：
 1. **manifest.jsonを更新**（`scripts/update_manifest.py` を実行）
-2. **git add + commit + push**（Claude が自動実行）
+2. **stock-dashboard リポジトリに git push**（Claude が自動実行）
 
 ```bash
 # manifest更新（--file と --url は省略可能・自動補完される）
@@ -143,10 +141,13 @@ python scripts/update_manifest.py \
   --date {YYYY-MM-DD} \
   --rank {ランク}
 
-# git push（必須）
-git add webapp/data/stocks/{コード}.json webapp/manifest.json
+# stock-dashboard リポジトリに git push（必須）
+# ※ stok-analyzer ではなく stock-dashboard のディレクトリに移動してpush
+cd ../stock-dashboard
+git add data/stocks/{コード}.json manifest.json
 git commit -m "feat: {企業名}（{コード}）分析データを追加"
 git push
+cd ../stok-analyzer
 ```
 
 **データ反映フロー（push直後に反映）：**
