@@ -29,8 +29,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(SCRIPT_DIR)
-# stok-analyzer の兄弟ディレクトリ stock-dashboard に書き込む
-MANIFEST_FILE = os.path.join(BASE_DIR, "..", "stock-dashboard", "manifest.json")
+MANIFEST_FILE = os.path.join(BASE_DIR, "webapp", "manifest.json")
 
 
 def load_manifest():
