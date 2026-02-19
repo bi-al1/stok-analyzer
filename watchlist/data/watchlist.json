@@ -67,24 +67,7 @@
         }
       ],
       "updated_at": "2026-02-19T00:00:00.000000"
-    },
-    {
-      "code": "2802",
-      "name": "味の素",
-      "added_date": "2026-02-19",
-      "note": "食品・アミノ酸のグローバル展開",
-      "kabumart_rank": "A",
-      "status": "interested",
-      "per": 25.6,
-      "per_history": [
-        {
-          "date": "2026-02-19",
-          "per": 25.6,
-          "source": "kabumart"
-        }
-      ],
-      "updated_at": "2026-02-19T00:00:00.000000"
     }
   ],
-  "updated_at": "2026-02-18T23:05:08.711259"
+  "updated_at": "2026-02-19T15:34:23.896901"
 }
