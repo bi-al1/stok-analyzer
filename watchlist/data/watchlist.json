@@ -18,17 +18,17 @@
       "updated_at": "2026-02-18T20:24:48.671475"
     },
     {
-      "code": "4755",
-      "name": "楽天グループ",
+      "code": "9984",
+      "name": "ソフトバンクグループ",
       "added_date": "2026-02-19",
-      "note": "モバイル事業黒字化期待",
-      "kabumart_rank": "E",
+      "note": "AI投資の旗手",
+      "kabumart_rank": "D",
       "status": "pending",
-      "per": -12.1,
+      "per": 45.3,
       "per_history": [
         {
           "date": "2026-02-19",
-          "per": -12.1,
+          "per": 45.3,
           "source": "kabumart"
         }
       ],
@@ -52,5 +52,5 @@
       "updated_at": "2026-02-19T00:00:00.000000"
     }
   ],
-  "updated_at": "2026-02-19T15:34:25.278143"
+  "updated_at": "2026-02-19T15:34:26.395659"
 }
