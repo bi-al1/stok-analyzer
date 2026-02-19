@@ -163,7 +163,7 @@ git push
 - ステータス変更はWebダッシュボード上でもClaudeへの依頼でも可能
 
 pushが完了したら、URLを案内する：
-`https://kabumart-analyzer.vercel.app/stocks/detail.html?code={コード}`
+`https://stock-dashboard-pi-navy.vercel.app/stocks/detail.html?code={コード}`
 
 ---
 

@@ -23,9 +23,9 @@ KabuMartで分析した「気になる銘柄」を管理するシンプルなリ
 ## データ管理
 
 ### 保存先
-GitHubリポジトリ `bi-al1/kabumart-web` の `data/watchlist.json`
+GitHubリポジトリ `bi-al1/stock-dashboard` の `data/watchlist.json`
 
-読み書きは全て **Render API（`https://kabumart-analyzer.onrender.com`）経由** で行う。
+読み書きは全て **Render API（`https://stock-dashboard-rif1.onrender.com`）経由** で行う。
 Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 
 ### データ構造
@@ -88,7 +88,7 @@ Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 3. 「✅ {企業名}（{コード}）をウォッチリストに追加しました（現在 N 銘柄）」と返答
 
 ```bash
-curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist \
+curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist \
   -H "Content-Type: application/json" \
   -d '{"code":"7203","name":"トヨタ自動車","note":"KabuMartスコアA+","kabumart_rank":"A+"}'
 ```
@@ -109,7 +109,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist \
 3. 「✅ {企業名}のステータスを「{ラベル}」に変更しました」と返答
 
 ```bash
-curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist/status \
+curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist/status \
   -H "Content-Type: application/json" \
   -d '{"code":"7203","status":"pending"}'
 # status値: watching / interested / pending
@@ -129,7 +129,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist/status \
 3. リストが空なら「ウォッチリストは空です。stok-analyzerで分析後に追加できます」
 
 ```bash
-curl https://kabumart-analyzer.onrender.com/api/watchlist
+curl https://stock-dashboard-rif1.onrender.com/api/watchlist
 ```
 
 ### 削除
@@ -142,7 +142,7 @@ curl https://kabumart-analyzer.onrender.com/api/watchlist
 2. 「🗑️ {企業名}（{コード}）をウォッチリストから削除しました」と返答
 
 ```bash
-curl -X DELETE https://kabumart-analyzer.onrender.com/api/watchlist/7203
+curl -X DELETE https://stock-dashboard-rif1.onrender.com/api/watchlist/7203
 ```
 
 ### 購入移行（portfolio-healthとの連携）
@@ -161,9 +161,9 @@ curl -X DELETE https://kabumart-analyzer.onrender.com/api/watchlist/7203
 ```
 Claude
   ↓ Render API を呼び出す（curl / fetch）
-Render FastAPI（https://kabumart-analyzer.onrender.com）
+Render FastAPI（https://stock-dashboard-rif1.onrender.com）
   ↓ GitHub Contents API を呼び出す
-GitHub（bi-al1/kabumart-web）の data/watchlist.json を更新・コミット
+GitHub（bi-al1/stock-dashboard）の data/watchlist.json を更新・コミット
   ↓
 ブラウザで「更新」ボタンを押すと最新データが反映される
 ```

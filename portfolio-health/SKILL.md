@@ -24,9 +24,9 @@ description: >
 ## データ管理
 
 ### 保存先
-GitHubリポジトリ `bi-al1/kabumart-web` の `data/portfolio.json`
+GitHubリポジトリ `bi-al1/stock-dashboard` の `data/portfolio.json`
 
-読み書きは全て **Render API（`https://kabumart-analyzer.onrender.com`）経由** で行う。
+読み書きは全て **Render API（`https://stock-dashboard-rif1.onrender.com`）経由** で行う。
 Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 
 ### データ構造
@@ -73,7 +73,7 @@ Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 3. 「✅ {企業名} {株数}株を{価格}円で買い記録しました」と返答
 
 ```bash
-curl -X POST https://kabumart-analyzer.onrender.com/api/portfolio/buy \
+curl -X POST https://stock-dashboard-rif1.onrender.com/api/portfolio/buy \
   -H "Content-Type: application/json" \
   -d '{"code":"7203","name":"トヨタ自動車","shares":100,"price":2500}'
 ```
@@ -83,7 +83,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/portfolio/buy \
 2. 「✅ {企業名} {株数}株を{価格}円で売り記録しました」と返答
 
 ```bash
-curl -X POST https://kabumart-analyzer.onrender.com/api/portfolio/sell \
+curl -X POST https://stock-dashboard-rif1.onrender.com/api/portfolio/sell \
   -H "Content-Type: application/json" \
   -d '{"code":"7203","shares":50,"price":3000}'
 ```
@@ -105,7 +105,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/portfolio/sell \
 3. ポートフォリオ全体の合計評価額・合計損益も表示
 
 ```bash
-curl https://kabumart-analyzer.onrender.com/api/portfolio
+curl https://stock-dashboard-rif1.onrender.com/api/portfolio
 ```
 
 ### 3. ヘルスチェック（定期監視の本体）
@@ -121,7 +121,7 @@ curl https://kabumart-analyzer.onrender.com/api/portfolio
 3. Claudeがアラート内容を初心者向けに解説して表示
 
 ```bash
-curl https://kabumart-analyzer.onrender.com/api/healthcheck
+curl https://stock-dashboard-rif1.onrender.com/api/healthcheck
 ```
 
 #### アラート判定基準（3段階）
@@ -207,9 +207,9 @@ curl https://kabumart-analyzer.onrender.com/api/healthcheck
 ```
 Claude
   ↓ Render API を呼び出す（curl / fetch）
-Render FastAPI（https://kabumart-analyzer.onrender.com）
+Render FastAPI（https://stock-dashboard-rif1.onrender.com）
   ↓ GitHub Contents API を呼び出す
-GitHub（bi-al1/kabumart-web）の data/portfolio.json を更新・コミット
+GitHub（bi-al1/stock-dashboard）の data/portfolio.json を更新・コミット
   ↓
 ブラウザで「更新」ボタンを押すと最新データが反映される
 ```
@@ -220,10 +220,10 @@ GitHub（bi-al1/kabumart-web）の data/portfolio.json を更新・コミット
 
 ## 技術仕様
 
-- データ：`bi-al1/kabumart-web` リポジトリの `data/portfolio.json`（GitHub管理）
+- データ：`bi-al1/stock-dashboard` リポジトリの `data/portfolio.json`（GitHub管理）
 - 株価取得・ヘルスチェック：Render FastAPI が yfinance で実行（`GET /api/healthcheck`）
-- Webダッシュボード：`https://kabumart-analyzer.vercel.app`（Vercel）
-- バックエンドAPI：`https://kabumart-analyzer.onrender.com`（Render）
+- Webダッシュボード：`https://stock-dashboard-pi-navy.vercel.app`（Vercel）
+- バックエンドAPI：`https://stock-dashboard-rif1.onrender.com`（Render）
 
 ---
 
