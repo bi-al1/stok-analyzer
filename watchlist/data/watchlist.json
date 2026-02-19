@@ -1,22 +1,4 @@
 {
-  "watchlist": [
-    {
-      "code": "402A",
-      "name": "アクセルスペースホールディングス",
-      "added_date": "2026-02-18",
-      "note": "KabuMartスコアC(3.1)、宇宙テック",
-      "kabumart_rank": "C",
-      "status": "watching",
-      "per": -9.1,
-      "per_history": [
-        {
-          "date": "2026-02-18",
-          "per": -9.1,
-          "source": "kabumart"
-        }
-      ],
-      "updated_at": "2026-02-18T20:24:48.671475"
-    }
-  ],
-  "updated_at": "2026-02-19T15:34:36.772310"
+  "watchlist": [],
+  "updated_at": "2026-02-19T15:35:02.925469"
 }
