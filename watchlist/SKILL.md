@@ -2,7 +2,7 @@
 name: watchlist
 description: >
   気になる銘柄のウォッチリストを管理するスキル。
-  kabumart-analyzerで分析した銘柄の追加、一覧表示、削除、ステータス変更を行う。
+  stok-analyzerで分析した銘柄の追加、一覧表示、削除、ステータス変更を行う。
   「ウォッチリストに追加」「気になる銘柄一覧」「ウォッチリストから外して」など、
   買う前の銘柄リスト管理に関する操作で使う。
   ダッシュボードからコピーしたテキスト（「ウォッチリストに追加: XXXX 企業名 日付」）を
@@ -79,7 +79,7 @@ Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 ### 追加
 **トリガー例：**
 - 「ウォッチリストに追加: 7203 トヨタ自動車 2026-02-17」（ダッシュボードからのコピペ）
-- 「これウォッチリストに入れて」（直前のkabumart-analyzer分析の文脈から）
+- 「これウォッチリストに入れて」（直前のstok-analyzer分析の文脈から）
 - 「7203をウォッチリストに追加」
 
 **処理：**
@@ -93,7 +93,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist \
   -d '{"code":"7203","name":"トヨタ自動車","note":"KabuMartスコアA+","kabumart_rank":"A+"}'
 ```
 
-**kabumart-analyzerからの引き継ぎ時：**
+**stok-analyzerからの引き継ぎ時：**
 - 分析データに `financials.per` があれば `note` に含める
 - KabuMartランクがあれば `kabumart_rank` に渡す
 
@@ -126,7 +126,7 @@ curl -X POST https://kabumart-analyzer.onrender.com/api/watchlist/status \
 **処理：**
 1. Render API `GET /api/watchlist` を呼び出す
 2. 一覧を表示（コード、企業名、ステータス、PER、追加日、メモ）
-3. リストが空なら「ウォッチリストは空です。kabumart-analyzerで分析後に追加できます」
+3. リストが空なら「ウォッチリストは空です。stok-analyzerで分析後に追加できます」
 
 ```bash
 curl https://kabumart-analyzer.onrender.com/api/watchlist

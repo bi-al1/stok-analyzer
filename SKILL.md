@@ -1,5 +1,5 @@
 ---
-name: kabumart-analyzer
+name: stok-analyzer
 description: >
   KabuMartのスクリーンショットから銘柄を分析し、インタラクティブなHTMLダッシュボードを生成するスキル。
   ユーザーがKabuMartのスクショを貼り付けたら、画像解析→yfinanceデータ取得→WebSearch調査→HTML生成を自動で行う。
