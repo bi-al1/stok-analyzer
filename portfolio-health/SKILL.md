@@ -197,7 +197,7 @@ curl https://stock-dashboard-rif1.onrender.com/api/healthcheck
 
 ウォッチリストに登録されている銘柄について「買った」と伝えられた場合：
 1. `POST /api/portfolio/buy` でポートフォリオに記録
-2. `DELETE /api/watchlist/{code}` でウォッチリストから削除
+2. `POST /api/watchlist/status` でステータスを `archived` に変更（データ保持のため削除しない）
 3. 「✅ ウォッチリストから移動しました。{企業名}を{株数}株、ポートフォリオに記録しました」
 
 ---
@@ -233,3 +233,4 @@ GitHub（bi-al1/stok-analyzer）の portfolio-health/data/portfolio.json を更�
 - 売買の最終判断はユーザー自身が行うことを必ず伝える
 - Renderは無料枠のためスリープあり。初回呼び出しは数秒かかる場合がある
 - yfinanceが使えない場合、ヘルスチェックと推定利回りは実行不可（エラーメッセージを表示）
+- ウォッチリストのPER更新（update-per）を行う際は、ステータスが `archived` の銘柄はスキップする。要観察・積極検討の銘柄のみ対象とする

@@ -11,14 +11,14 @@ kabumart-analyzerで分析した銘柄の追加・一覧・削除・ステータ
     python watchlist_manager.py list
     python watchlist_manager.py list --format detail
     python watchlist_manager.py remove --code 7203
-    python watchlist_manager.py status --code 7203 --status pending
+    python watchlist_manager.py status --code 7203 --status archived
     python watchlist_manager.py update-per --code 7203 --per 13.2
     python watchlist_manager.py count
 
 ステータス一覧:
-    watching   👀 要観察（デフォルト）
+    archived   📦 アーカイブ（デフォルト）
+    watching   👀 要観察
     interested 💛 積極検討
-    pending    ⏳ 見送り中
 """
 
 import argparse
@@ -37,11 +37,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 WATCHLIST_FILE = os.path.join(DATA_DIR, "watchlist.json")
 
-VALID_STATUSES = ["watching", "interested", "pending"]
+VALID_STATUSES = ["archived", "watching", "interested"]
 STATUS_LABELS = {
+    "archived":   "📦 アーカイブ",
     "watching":   "👀 要観察",
     "interested": "💛 積極検討",
-    "pending":    "⏳ 見送り中",
 }
 
 
@@ -84,7 +84,7 @@ def add_stock(code: str, name: str, note: str = "", rank: str = "",
         "name": name,
         "added_date": datetime.now().strftime("%Y-%m-%d"),
         "note": note,
-        "status": status if status in VALID_STATUSES else "watching",
+        "status": status if status in VALID_STATUSES else "archived",
         "per": per,
     }
     if rank:

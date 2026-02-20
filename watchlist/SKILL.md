@@ -39,7 +39,7 @@ Claudeが直接JSONを編集したりgit pushしたりする必要はない。
       "note": "KabuMartスコアA+、変化スコア72",
       "kabumart_rank": "A+",
       "change_score": 72,
-      "status": "watching",
+      "status": "archived",
       "per": 12.5,
       "per_history": [
         { "date": "2026-02-17", "per": 15.2, "source": "kabumart" },
@@ -68,9 +68,9 @@ Claudeが直接JSONを編集したりgit pushしたりする必要はない。
 ### ステータス一覧
 | 値 | 表示 | 意味 |
 |----|------|------|
-| `watching` | 👀 要観察 | デフォルト。気になって観察中 |
-| `interested` | 💛 積極検討 | 近く買いたい候補 |
-| `pending` | ⏳ 見送り中 | 今は買わないが消したくない |
+| `archived` | 📦 アーカイブ | デフォルト。分析済みだがダッシュボードのウォッチリストには非表示 |
+| `watching` | 👀 要観察 | 気になって観察中。ダッシュボードに表示される |
+| `interested` | 💛 積極検討 | 近く買いたい候補。ダッシュボードに表示される |
 
 ---
 
@@ -100,7 +100,7 @@ curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist \
 ### ステータス変更
 **トリガー例：**
 - 「402Aを積極検討に変えて」
-- 「アクセルスペースは見送りにして」
+- 「アクセルスペースはアーカイブにして」
 - 「7203を要観察に戻して」
 
 **処理：**
@@ -111,8 +111,8 @@ curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist \
 ```bash
 curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist/status \
   -H "Content-Type: application/json" \
-  -d '{"code":"7203","status":"pending"}'
-# status値: watching / interested / pending
+  -d '{"code":"7203","status":"watching"}'
+# status値: archived / watching / interested
 ```
 
 **注意：** ステータスはWebダッシュボード上でも変更可能。どちらで変更しても即時反映される。
@@ -132,18 +132,22 @@ curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist/status \
 curl https://stock-dashboard-rif1.onrender.com/api/watchlist
 ```
 
-### 削除
+### アーカイブ（ウォッチリストから非表示）
 **トリガー例：**
 - 「7203をウォッチリストから外して」
-- 「トヨタを削除」
+- 「トヨタをアーカイブにして」
 
 **処理：**
-1. Render API `DELETE /api/watchlist/{code}` を呼び出す
-2. 「🗑️ {企業名}（{コード}）をウォッチリストから削除しました」と返答
+1. Render API `POST /api/watchlist/status` でステータスを `archived` に変更する
+2. 「📦 {企業名}（{コード}）をアーカイブしました」と返答
 
 ```bash
-curl -X DELETE https://stock-dashboard-rif1.onrender.com/api/watchlist/7203
+curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist/status \
+  -H "Content-Type: application/json" \
+  -d '{"code":"7203","status":"archived"}'
 ```
+
+**注意：** アーカイブはデータを保持したまま非表示にする操作。per_historyなどのデータは保持される。復帰は分析レポート一覧から詳細ページを開き、ステータスを変更すればよい。
 
 ### 購入移行（portfolio-healthとの連携）
 **トリガー例：**
@@ -182,3 +186,4 @@ GitHub（bi-al1/stok-analyzer）の watchlist/data/watchlist.json を更新・�
 - PERはnullの場合もある（赤字企業はPER計算不能）
 - Renderは無料枠のためスリープあり。初回呼び出しは数秒かかる場合がある
 - ダッシュボードからの操作（UI）もRender API経由で同じJSONを更新する
+- update-per（PER更新）はステータスが `archived` 以外の銘柄のみを対象とする。アーカイブ済みの銘柄はPER更新をスキップする
