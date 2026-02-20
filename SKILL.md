@@ -1,17 +1,20 @@
 ---
 name: stok-analyzer
 description: >
-  KabuMartのスクリーンショットから銘柄を分析し、インタラクティブなHTMLダッシュボードを生成するスキル。
-  ユーザーがKabuMartのスクショを貼り付けたら、画像解析→yfinanceデータ取得→WebSearch調査→HTML生成を自動で行う。
+  KabuMartのスクリーンショットから銘柄を分析し、分析JSONを生成するスキル。
+  ユーザーがKabuMartのスクショを貼り付けたら、画像解析→yfinanceデータ取得→WebSearch調査→JSON生成を自動で行う。
   「銘柄分析」「KabuMart」「株分析」「企業分析」「スクリーニング結果」「この銘柄どう？」など、
   日本株の個別銘柄を調べたいときに必ず使う。スクリーンショットが添付されていなくても、
   銘柄コード（4桁）や企業名が指定されていればWebSearchのみで分析を実行できる。
 ---
 
-# KabuMart銘柄分析ダッシュボード
+# KabuMart銘柄分析
 
 KabuMartのスクリーンショットを読み取り、yfinanceで定量データを取得し、
-WebSearchで定性情報を補完して、初心者にもわかりやすいインタラクティブHTMLダッシュボードを生成する。
+WebSearchで定性情報を補完して、分析結果をJSON形式で出力する。
+
+**このスキルの責務は「正しい形式のJSONを生成してGitHubにpushすること」のみ。**
+HTMLの生成・表示には一切関与しない（別リポジトリの `detail.html` がJSONを読み取って描画する）。
 
 ## 対象ユーザー
 
@@ -112,24 +115,9 @@ verdict:       強み3つ、懸念3つ、初心者向けまとめ
 
 ### Step 5：分析JSONの生成・保存・push
 
-**HTMLは生成しない。** 分析結果は `webapp/data/stocks/{コード}.json` に保存する。
-表示は `stock-dashboard/frontend/stocks/detail.html` が動的に読み込んで行う（1枚で全銘柄に対応）。
+**** 分析結果は `webapp/data/stocks/{コード}.json` に保存する。
 
 **保存先：** `webapp/data/stocks/{銘柄コード}.json`（例：`402A.json`）
-
-**JSONの構造（必須フィールド）：**
-- `company`：企業名、コード、業種、市場、調査日
-- `scores`：KabuMartスコア（total_score, total_rank, axes）
-- `financials`：PER, ROE, 自己資本比率, バリュエーションテーブル
-- `price`：現在株価, 52週高値/安値
-- `price_history`：株価履歴（`[{"date": "YYYY-MM-DD", "close": 1234}, ...]`）
-- `business`：catchcopy, paragraphs, tags, segments
-- `positives` / `negatives`：title, impact, explain, source
-- `verdict`：strengths, risks, summary
-- `has_yfinance`, `has_websearch`, `has_kabumart`：データソースフラグ
-- `links`：参考URLリスト
-
-**詳細なJSONスキーマは `webapp/data/stocks/402A.json` を参照（実例）。**
 
 生成後に以下を必ず実行する：
 1. **manifest.jsonを更新**（`scripts/update_manifest.py` を実行）
@@ -149,113 +137,8 @@ git commit -m "feat: {企業名}（{コード}）分析データを追加"
 git push
 ```
 
-**データ反映フロー（push直後に反映）：**
-
-| データ | 読み込み元 | 書き込み |
-|--------|----------|---------|
-| 分析JSON（銘柄データ） | GitHub Raw URL | git push |
-| watchlist.json | Render `/api/watchlist` → GitHub API | git push or Render API → GitHub API |
-| manifest.json | GitHub Raw URL | git push |
-| healthcheck | Render FastAPI（yfinance） | — |
-
-- 分析JSON / manifest：git push後にブラウザリロードで即時反映
-- watchlist：Render API経由でGitHub APIから直接取得（CDNキャッシュ問題を回避）
-- ステータス変更はWebダッシュボード上でもClaudeへの依頼でも可能
-
 pushが完了したら、URLを案内する：
 `https://stock-dashboard-pi-navy.vercel.app/stocks/detail.html?code={コード}`
-
----
-
-## ダッシュボードの構成（8セクション）
-
-`../stock-dashboard/frontend/stocks/detail.html` が各 JSON フィールドをどう表示するかの構成。
-**JSONに何を入れるべきかの設計ガイドとして参照する。**
-
-### 1. ヘッダー
-- 企業名（銘柄コード）、業種、市場、調査日
-- 「ひと言で言うと？」キャッチコピー（初心者がイメージできる一文）
-- **データソース表示**：yfinanceデータの有無を小さくバッジ表示（「📊 yfinance取得済」/「📝 WebSearchのみ」）
-
-### 2. この会社は何をしている？（ビジネスモデル）
-- 左カラム：平易な文章で事業内容を説明（3段落程度）
-- 右カラム：事業ごとのハイライトカード
-- タグ：BtoB/BtoC、収益モデルの種類、市場特性
-- この会社の具体的な製品やサービスが何に使われているかまで踏み込んで書く
-
-### 3. KabuMartスコア
-- 左：総合スコアの円形表示 + ランクバッジ
-- 右：レーダーチャート（5軸。Chart.jsで描画）
-- 基準ライン（70点）の点線を重ねて表示
-- レーダーのラベルにスコア値とランクを含める
-
-### 4. 主要財務指標（ゲージメーター×3 + バリュエーション表）
-- 予想PER：業種平均との比較 **← yfinanceの値を優先**
-- ROE：目安10%との比較 **← yfinanceの値を優先**
-- 自己資本比率：目安40%との比較 **← yfinanceの値を優先**
-- 各ゲージにホバーで「つまりどういうこと？」ツールチップ
-- **追加：バリュエーション補足テーブル**（yfinanceデータがある場合）
-  - PBR、配当利回り、EV/EBITDA、売上成長率を小さなテーブルで表示
-  - 各指標に一般的な目安値を併記
-
-### 5. 変化スコア（yfinanceデータがある場合のみ表示）
-- **4つのゲージまたはバー**：アクルーアルズ、売上加速度、FCFマージン変化、ROE趨勢（各25点満点）
-- **合計スコア**（100点満点）と解釈ラベル（📈強い改善 / ↗️改善傾向 / ➡️横ばい / 📉悪化）
-- **ホバーで「つまりどういうこと？」解説**：
-  - アクルーアルズ → 「利益がちゃんとキャッシュで裏付けられているか。高いほど"見せかけ"じゃない利益」
-  - 売上加速度 → 「売上の伸びが加速しているか。プラスなら勢いが増している」
-  - FCFマージン変化 → 「自由に使えるお金の割合が増えているか。企業の"余裕度"の変化」
-  - ROE趨勢 → 「株主のお金をどれだけ効率よく増やせているかの変化」
-- **このセクションの趣旨**：KabuMartスコアは"今の状態"、変化スコアは"方向性"。
-  両方見ることで「高スコアだけど下り坂」「低スコアだけど改善中」を見分けられる。
-- yfinanceデータがない場合はこのセクションをまるごとスキップ
-
-### 6. テクニカル＆推定リターン（yfinanceデータがある場合のみ表示）
-- **左カラム：テクニカルサマリー**
-  - RSI（売られすぎ/買われすぎの判定付き）
-  - SMAステータス（上昇/下降トレンドをアイコンで）
-  - ボリンジャーバンド位置
-  - リターン一覧（1M / 3M / 6M / 1Y）
-- **右カラム：推定リターン3シナリオ**
-  - 楽観 / ベース / 悲観 の棒グラフまたはカード
-  - アナリスト数の表示（少数の場合は信頼度注意のバッジ）
-  - アナリスト目標株価 vs 現在株価のかい離率
-- **ホバーで初心者向け解説**：
-  - RSI → 「70以上は"買われすぎ"で一旦下がりやすい、30以下は"売られすぎ"で反発しやすい」
-  - SMAクロス → 「短期と長期の移動平均が交差するタイミング。ゴールデンクロスは上昇サイン」
-- yfinanceデータがない場合はこのセクションをまるごとスキップ
-
-### 7. ポジティブ / ネガティブ分析
-- 左右2カラム（緑カード / 赤カード）
-- 各カードに：タイトル、情報源（📌 KabuMart / 📌 WebSearch / 📊 yfinance）、インパクトバッジ、星評価
-- **「つまりどういうこと？」解説は常時表示**（カード内に埋め込み）
-- KabuMartの要素 + WebSearchで追加発見した要素の両方を含める
-- **yfinanceデータから追加できるポジティブ/ネガティブ要素**：
-  - PBR < 1.0 → 「資産価値以下で買える（割安の可能性）」をポジティブに追加
-  - 配当利回り > 3% → 「高配当銘柄」をポジティブに追加
-  - 変化スコア > 60 → 「業績改善トレンド」をポジティブに追加
-  - 変化スコア < 30 → 「業績悪化傾向」をネガティブに追加
-  - RSI > 70 → 「短期的に買われすぎ」をネガティブに追加
-  - デッドクロス → 「テクニカル的に弱い」をネガティブに追加
-
-### 8. 総合評価
-- 強み3つ・懸念3つを左右に並列表示
-- 「初心者向けまとめ」ボックス（結論ファーストの平易な文章）
-- **変化スコアがある場合**：まとめに「今の方向性」（改善中 or 悪化中）を一文追加
-
-### 9. ウォッチリスト追加・管理ボタン（detail.html が実装済み）
-
-detail.html がウォッチリスト管理UIを全て実装している。Claudeスキルは実装不要。
-
-- **未登録銘柄の場合**：画面下部に「👀 ウォッチリストに追加」ボタンを表示
-  - クリックで Render API `POST /api/watchlist` を直接呼び出し（クリップボードコピーは行わない）
-  - 登録完了後、ボタンがステータスセレクターに切り替わる
-- **登録済み銘柄の場合**：画面上部バーにステータスセレクターを表示
-  - `👀 要観察` / `💛 積極検討` / `⏳ 見送り中` を切り替え可能
-  - 変更は Render API `POST /api/watchlist/status` で即時反映（GitHub に自動コミット）
-  - 🗑️ ボタンでウォッチリストから削除（分析JSONは残る）
-- ダッシュボード下部に「🗑️ 分析レポートを削除」ボタンも表示
-  - Render API `DELETE /api/report/{code}` を呼び出し（分析JSON削除 + manifest除外）
 
 ### Step 6（JSON push後）：ウォッチリスト追加の提案
 
@@ -267,19 +150,221 @@ detail.html がウォッチリスト管理UIを全て実装している。Claude
 
 ---
 
+## JSONスキーマ定義
+
+以下は `detail.html` のJavaScriptが参照する全フィールドを網羅したスキーマ。
+このスキーマに従ったJSONを出力すること。
+
+### トップレベル
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `generated_at` | string | ✅ | 生成日時 ISO形式（例: `"2026-02-20T10:00:00"`） |
+| `has_yfinance` | boolean | ✅ | yfinanceデータ取得成否 |
+| `has_websearch` | boolean | ✅ | WebSearch実行成否 |
+| `has_kabumart` | boolean | ✅ | KabuMartスクショからの読み取り成否 |
+| `ipo_date` | string\|null | | IPO日 `"YYYY-MM-DD"`（該当する場合のみ。株価チャート上にIPOラインが描画される） |
+
+### `company` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `name` | string | ✅ | 企業名 |
+| `code` | string | ✅ | 銘柄コード（4桁） |
+| `industry` | string | ✅ | 業種（具体的に。例: `"宇宙・航空"`, `"精密機器"` ） |
+| `market` | string | ✅ | 市場（例: `"東証プライム"`, `"東証グロース"`） |
+| `analyzed_date` | string | ✅ | 調査日 `"YYYY-MM-DD"` |
+| `extra_badge` | string\|null | | 追加バッジテキスト（例: `"IPO 2025.8"`）。該当する場合のみ |
+| `kabumart_score` | number\|null | | KabuMart総合スコア（0〜10）。ウォッチリスト追加時にも使用される |
+| `kabumart_rank` | string\|null | | KabuMartランク（`"SSS"` 〜 `"F"`）。ウォッチリスト追加時にも使用される |
+
+### `scores` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `total_score` | number | ✅ | 総合スコア（0〜10）。円グラフで表示される |
+| `total_rank` | string | ✅ | 総合ランク。有効値: `"SSS"`,`"SS"`,`"S"`,`"A+"`,`"A"`,`"B+"`,`"B"`,`"C"`,`"D"`,`"E"`,`"F"` |
+| `note` | string | | スコアの補足説明（例: 赤字フェーズの場合の注釈など） |
+| `interpretation` | string | | スコアの読み方・解釈（初心者向け。ボックス内に表示される） |
+| `axes` | object | ✅ | 5軸スコア（下記参照） |
+
+**`axes` の各軸**（キー: `growth`, `stability`, `profitability`, `capacity`, `innovation`）：
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `score` | number | ✅ | スコア値（0〜10）。バーとレーダーチャートの両方で使用 |
+| `rank` | string | ✅ | ランク（`"SSS"` 〜 `"F"`） |
+
+### `financials` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `per` | number\|null | ✅ | 予想PER。赤字の場合 `null`（ゲージが「赤字」表示になる） |
+| `per_note` | string | | PERの初心者向け解説（ゲージ下のツールチップに表示） |
+| `roe` | number\|null | ✅ | ROE %値。赤字の場合 `null` |
+| `roe_note` | string | | ROEの初心者向け解説 |
+| `equity_ratio` | number\|null | ✅ | 自己資本比率 %値（0〜100） |
+| `equity_ratio_note` | string | | 自己資本比率の初心者向け解説 |
+| `valuation_table` | array | | バリュエーション詳細テーブル（下記参照）。yfinanceデータがある場合に出力 |
+
+**`valuation_table` の各行：**
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `label` | string | 指標名（例: `"PBR（株価純資産倍率）"`, `"配当利回り"`, `"売上成長率（前年比）"`） |
+| `value` | string | 値（表示用文字列。例: `"4.24倍"`, `"なし"`, `"-44.4%"`） |
+| `benchmark` | string | 一般的な目安（例: `"目安: 1倍以下は割安"`, `"プラスが望ましい"`） |
+| `status` | string | 評価ステータス: `"good"` / `"warn"` / `"bad"` |
+| `badge` | string | 評価バッジテキスト（例: `"割安"`, `"割高"`, `"高水準"`, `"無配"`） |
+| `badge_color` | string | バッジ色: `"green"` / `"orange"` / `"red"` / `"gray"` |
+| `note` | string | 初心者向け補足説明（「つまり」を含む） |
+
+### `price` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `current` | number | ✅ | 現在株価（円） |
+| `week52_high` | number | | 52週高値（円） |
+| `week52_low` | number | | 52週安値（円） |
+| `from_high_pct` | string | | 高値からの変動率（例: `"-51.1%"`, `"+12.3%"`） |
+
+### `price_history` 配列
+
+yfinanceで取得した過去1年間の日次終値データ。株価チャートとして描画される。
+
+各要素: `{ "date": "YYYY-MM-DD", "close": 数値 }`
+
+### `earnings_dates` 配列（任意）
+
+決算発表日のリスト。チャート上にマーカーとして表示可能。
+
+各要素: `{ "date": "YYYY-MM-DD", "label": "1Q決算" }`
+
+### `business` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `catchcopy` | string | ✅ | キャッチコピー。HTML `<span>` タグで副題を囲むことも可能 |
+| `paragraphs` | string[] | ✅ | 事業説明（3段落程度の配列）。具体的な製品・サービス名を含めること |
+| `tags` | string[] | ✅ | ビジネスタグ（例: `["BtoB", "宇宙インフラ", "グロース株"]`） |
+| `segments` | array | ✅ | 事業セグメント情報（下記参照） |
+
+**`segments` の各要素：**
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `icon` | string | 絵文字アイコン（例: `"🌍"`, `"🚀"`） |
+| `name` | string | セグメント名 |
+| `description` | string | セグメントの説明（初心者向け、具体的に） |
+| `highlight` | boolean | 主力セグメントの場合 `true`（視覚的に強調表示される） |
+
+### `change_score` オブジェクト（yfinanceデータがある場合のみ）
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `total` | number | 合計スコア（0〜100） |
+| `interpretation` | string | 解釈ラベル。≥75: `"強い改善トレンド 📈"` / 50-74: `"改善傾向あり ↗️"` / 35-49: `"横ばい ➡️"` / <35: `"悪化傾向 📉"` |
+| `components` | object | 4指標の詳細（キー: `accruals`, `revenue_accel`, `fcf_margin`, `roe_trend`） |
+
+**`components` の各指標：**
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `score` | number | スコア（0〜25） |
+| `max` | number | 常に `25` |
+| `detail` | string | 初心者向けの解説文（「つまり」を含む） |
+
+### `technical` オブジェクト（yfinanceデータがある場合のみ）
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `rsi_14` | number\|null | RSI（14日） |
+| `bollinger_position` | number\|null | ボリンジャーバンド内の位置（0〜1） |
+| `sma_status` | object | `{ "sma50_above_price": boolean|null, "golden_cross": boolean|null, "death_cross": boolean|null }` |
+| `return_1m` | number\|null | 1ヶ月リターン（%） |
+| `return_3m` | number\|null | 3ヶ月リターン（%） |
+| `return_6m` | number\|null | 6ヶ月リターン（%） |
+| `return_1y` | number\|null | 1年リターン（%） |
+| `volatility_30d` | number\|null | 30日ボラティリティ（%） |
+
+### `analyst` オブジェクト（yfinanceデータがある場合のみ）
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `target_high` | number\|null | アナリスト目標株価（高値） |
+| `target_mean` | number\|null | アナリスト目標株価（平均） |
+| `target_low` | number\|null | アナリスト目標株価（安値） |
+| `recommendation` | string\|null | 推奨: `"buy"` / `"hold"` / `"sell"` / `"none"` |
+| `number_of_analysts` | number\|null | アナリスト数 |
+
+### `positives` / `negatives` 配列
+
+各要素：
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `title` | string | ✅ | 要素のタイトル |
+| `impact` | string | ✅ | インパクト: `"high"` / `"mid"` / `"low"` |
+| `explain` | string | ✅ | 初心者向け解説。必ず「つまり」を含む言い換えを入れること |
+| `source` | string | ✅ | 情報源: `"📌 KabuMart"` / `"📝 WebSearch"` / `"📊 yfinance"` またはそれらの組み合わせ |
+
+**yfinanceデータから自動追加するポジネガ要素：**
+- PBR < 1.0 → ポジティブに追加「資産価値以下で買える（割安の可能性）」
+- 配当利回り > 3% → ポジティブに追加「高配当銘柄」
+- 変化スコア > 60 → ポジティブに追加「業績改善トレンド」
+- 変化スコア < 30 → ネガティブに追加「業績悪化傾向」
+- RSI > 70 → ネガティブに追加「短期的に買われすぎ」
+- デッドクロス → ネガティブに追加「テクニカル的に弱い」
+
+### `verdict` オブジェクト
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `strengths` | array | ✅ | 強み3つ（下記の要素形式） |
+| `risks` | array | ✅ | 懸念3つ（下記の要素形式） |
+| `summary` | string | ✅ | 初心者向けまとめ（結論ファースト、200〜400文字）。変化スコアがある場合は「今の方向性」も含める |
+
+**`strengths` / `risks` の各要素：**
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `icon` | string | 絵文字アイコン（例: `"💪"`, `"⚠️"`, `"🛰️"`） |
+| `title` | string | 短いタイトル |
+| `text` | string | 初心者向けの詳細説明 |
+
+### `links` 配列
+
+各要素: `{ "label": "表示テキスト", "url": "https://..." }`
+
+参考URLリスト（公式IR、ニュース記事、決算資料など）。
+
+---
+
 ## ライティングルール
 
+JSON内のテキスト系フィールド（`explain`, `*_note`, `summary`, `paragraphs`, `description`, `catchcopy`, `detail`, `interpretation` 等）は
 初心者が「つまりどういうこと？」と迷わないように以下を徹底する。
 
-- 専門用語（PER、ROE、自己資本比率など）は登場するたびに平易な言葉で言い換える
-- 「つまり〇〇ってこと」という言い換えを必ず入れる
-- 抽象的な業種名だけで終わらせず、具体的に何をしている会社かを伝える
-- 友人に分かりやすく教えるような口調で、でも投資判断に必要な情報は漏らさず提供する
-- 数字は可能な限り具体的に入れる
-- 事業セグメントの「つまり」解説はホバーツールチップで表示
-- ポジネガの「つまり」解説はカード内に常時表示
-- **yfinanceの数字とWebSearchの数字に差がある場合、yfinanceの値を優先し、
-  「（yfinance取得値。WebSearchでは〇〇との記載あり）」と注記する**
+1. **専門用語は登場するたびに平易な言葉で言い換える**
+   - PER 12倍 → 「利益の12倍の価格で買える」
+   - ROE 15% → 「株主のお金を15%の効率で増やしている」
+   - 自己資本比率 50% → 「企業の資産の50%が自分たちのお金」
+
+2. **「つまり〇〇ってこと」を必ず入れる**
+   - `explain` フィールドには必ず「つまり」を含む言い換えを入れる
+   - `*_note` フィールドにも平易な解説を添える
+
+3. **抽象的な業種名だけで終わらせない**
+   - ❌ 「電子機器製造企業」
+   - ✅ 「ロボットの目になる精密なセンサーを世界中の工場に売っている企業」
+
+4. **友人に教えるような口調**
+   - 投資判断に必要な情報は漏らさず、でも簡潔に
+   - 数字は可能な限り具体的に入れる
+
+5. **データソース間の差異**
+   - yfinanceの数字とWebSearchの数字に差がある場合、yfinanceの値を優先
+   - 「（yfinance取得値。WebSearchでは〇〇との記載あり）」と注記する
 
 ---
 
@@ -291,28 +376,28 @@ detail.html がウォッチリスト管理UIを全て実装している。Claude
 | ROE, 自己資本比率 | yfinance | WebSearch |
 | 株価, 時価総額 | yfinance | WebSearch |
 | アナリスト目標株価 | yfinance | WebSearch |
-| テクニカル指標 | yfinance | 表示しない |
-| 変化スコア | yfinance | 表示しない |
+| テクニカル指標 | yfinance | 出力しない |
+| 変化スコア | yfinance | 出力しない |
 | ビジネスモデル, 事業内容 | WebSearch | ― |
 | 競合, 市場シェア | WebSearch | ― |
 | 成長戦略, リスク | WebSearch | ― |
-| KabuMartスコア | 画像解析 | 表示しない |
+| KabuMartスコア | 画像解析 | 出力しない |
 
 ---
 
 ## 技術仕様
 
-- **出力**：JSONファイル（`webapp/data/stocks/{コード}.json`）のみ。**HTMLは生成しない。**
-- **表示担当**：`../stock-dashboard/frontend/stocks/detail.html` が JSON を動的に読み込んで表示
-- **チャート/UI**：detail.html が Chart.js（CDN）・CSS Grid・ダーク系テーマで実装済み
+- **出力**：JSONファイル（`webapp/data/stocks/{コード}.json`）のみ。
 - **Pythonスクリプト**：`scripts/fetch_yfinance.py`（要 `pip install yfinance`）
+- **ダッシュボードURL**：`https://stock-dashboard-pi-navy.vercel.app`
+- **バックエンドAPI**：`https://stock-dashboard-rif1.onrender.com`
 
 ---
 
 ## 注意事項
 
-- このレポートは投資助言ではないことをフッターに必ず明記する
-- データの出典（KabuMart、yfinance、WebSearch元）を可能な範囲で記載する
+- このレポートは投資助言ではない（`verdict.summary` の末尾にも含める）
+- データの出典（KabuMart、yfinance、WebSearch元）を `source` フィールドに記載する
 - 株価や市場データは現在の日付を基準に検索する
 - 調査はあくまで公開情報に基づくものであり、正確性を保証するものではない
-- **yfinanceのデータは無料APIであり、リアルタイムではなく遅延データの可能性がある旨を注記する**
+- yfinanceのデータは無料APIであり、リアルタイムではなく遅延データの可能性がある
