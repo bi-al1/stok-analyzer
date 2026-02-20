@@ -154,7 +154,7 @@ curl -X POST https://stock-dashboard-rif1.onrender.com/api/watchlist/status \
 - 「7203を買った」「トヨタを100株買った」
 
 **処理：**
-1. Render API `DELETE /api/watchlist/{code}` でウォッチリストから削除
+1. Render API `POST /api/watchlist/status` でステータスを `archived` に変更（データ保持のため削除しない）
 2. 「portfolio-healthスキルで売買記録を登録してください」と案内
 3. または、購入情報（株数・価格）が提供されていれば、portfolio-healthに引き継ぐ
 

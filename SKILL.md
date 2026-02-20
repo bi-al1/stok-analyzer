@@ -140,13 +140,30 @@ git push
 pushが完了したら、URLを案内する：
 `https://stock-dashboard-pi-navy.vercel.app/stocks/detail.html?code={コード}`
 
-### Step 6（JSON push後）：ウォッチリスト追加の提案
+### Step 6（JSON push後）：ウォッチリストに自動追加
 
-分析JSONをpushしてURLを案内した後、Claudeはユーザーに対して以下のように提案する：
-「ウォッチリストに追加しますか？ダッシュボードの『👀 ウォッチリストに追加』ボタンから直接登録できます。または『追加して』と伝えてください」
-- ダッシュボードのボタンから直接 Render API 経由で登録可能（GitHub に自動コミット）
-- ユーザーが「追加して」「入れといて」等と口頭で伝えた場合 → watchlistスキルが処理
-- analyzerは提案するだけで、保存処理には関与しない（役割分離）
+分析JSONをpushしたら、**自動的にウォッチリストに追加する**（デフォルトステータス: `archived`）。
+これにより `per_history[0]` が確実に記録され、detail.htmlのPER推移チャートが初回から表示可能になる。
+
+**処理：**
+1. Render API `POST /api/watchlist` を呼び出す
+2. リクエストボディ:
+   ```json
+   {
+     "code": "{銘柄コード}",
+     "name": "{企業名}",
+     "note": "総合スコア {total_rank} ({total_score}/10)",
+     "kabumart_rank": "{total_rank}",
+     "per": {financials.per の値、nullの場合は省略}
+   }
+   ```
+3. APIがデフォルトステータス `archived` でwatchlist.jsonに追加し、`per_history[0]` を自動生成する
+4. ユーザーへの案内:
+   「✅ 分析完了！ウォッチリストにも自動登録しました（📦アーカイブ状態）。気になる銘柄なら詳細ページでステータスを👀要観察や💛積極検討に変更できます。」
+
+**既にウォッチリストに存在する場合：**
+- APIが409（重複）を返すので、追加処理をスキップする（エラーにはしない）
+- 既存のper_historyは保持される
 
 ---
 
