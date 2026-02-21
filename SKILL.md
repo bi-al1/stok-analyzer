@@ -224,11 +224,11 @@ pushが完了したら、URLを案内する：
 | `equity_ratio_note` | string | | 自己資本比率の初心者向け解説 |
 | `valuation_table` | array | | バリュエーション詳細テーブル（下記参照）。yfinanceデータがある場合に出力 |
 
-**`valuation_table` の各行：**
+**`valuation_table` の各行（※必ず「PER（予想PER）」と「ROE」の行を含めること）：**
 
 | フィールド | 型 | 説明 |
 |---|---|---|
-| `label` | string | 指標名（例: `"PBR（株価純資産倍率）"`, `"配当利回り"`, `"売上成長率（前年比）"`） |
+| `label` | string | 指標名（例: `"PER（予想PER）"`, `"ROE"`, `"PBR（株価純資産倍率）"`, `"配当利回り"`） |
 | `value` | string | 値（表示用文字列。例: `"4.24倍"`, `"なし"`, `"-44.4%"`） |
 | `benchmark` | string | 一般的な目安（例: `"目安: 1倍以下は割安"`, `"プラスが望ましい"`） |
 | `status` | string | 評価ステータス: `"good"` / `"warn"` / `"bad"` |
