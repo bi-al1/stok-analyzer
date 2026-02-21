@@ -1,11 +1,11 @@
 {
   "holdings": [
     {
-      "code": "7203",
-      "name": "トヨタ自動車",
+      "code": "402A",
+      "name": "アクセルスペースホールディングス",
       "shares": 100,
-      "avg_cost": 2500.0,
-      "purchase_date": "2026-02-21",
+      "avg_cost": 800.0,
+      "purchase_date": "2026-02-18",
       "note": ""
     }
   ],
@@ -17,15 +17,7 @@
       "action": "buy",
       "shares": 100,
       "price": 800.0
-    },
-    {
-      "date": "2026-02-21",
-      "code": "7203",
-      "name": "トヨタ自動車",
-      "action": "buy",
-      "shares": 100,
-      "price": 2500.0
     }
   ],
-  "updated_at": "2026-02-21T07:25:53.059229"
+  "updated_at": "2026-02-21T08:15:17.609560"
 }
