@@ -7,8 +7,16 @@
       "note": "総合スコア S (8.7/10)",
       "kabumart_rank": "S",
       "status": "interested",
-      "updated_at": "2026-02-20T05:16:50.960331"
+      "updated_at": "2026-02-20T05:16:50.960331",
+      "per": 27.5,
+      "per_history": [
+        {
+          "date": "2026-02-21",
+          "per": 27.5,
+          "source": "yfinance"
+        }
+      ]
     }
   ],
-  "updated_at": "2026-02-20T05:16:50.960353"
+  "updated_at": "2026-02-21T07:25:27.047305"
 }
