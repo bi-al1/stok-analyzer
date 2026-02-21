@@ -409,13 +409,4 @@ JSON内のテキスト系フィールド（`explain`, `*_note`, `summary`, `para
 - **ダッシュボードURL**：`https://stock-dashboard-pi-navy.vercel.app`
 - **バックエンドAPI**：`https://stock-dashboard-rif1.onrender.com`
 
----
-
-## 注意事項
-
-- このレポートは投資助言ではない（`verdict.summary` の末尾にも含める）
-- データの出典（KabuMart、yfinance、WebSearch元）を `source` フィールドに記載する
-- 株価や市場データは現在の日付を基準に検索する
-- 調査はあくまで公開情報に基づくものであり、正確性を保証するものではない
-- yfinanceのデータは無料APIであり、リアルタイムではなく遅延データの可能性がある
 
