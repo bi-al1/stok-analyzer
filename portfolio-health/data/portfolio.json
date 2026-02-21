@@ -1,14 +1,5 @@
 {
-  "holdings": [
-    {
-      "code": "3850",
-      "name": "NTTデータ",
-      "shares": 100,
-      "avg_cost": 3000.0,
-      "purchase_date": "2026-02-21",
-      "note": ""
-    }
-  ],
+  "holdings": [],
   "trade_history": [
     {
       "date": "2026-02-18",
@@ -27,5 +18,5 @@
       "price": 3000.0
     }
   ],
-  "updated_at": "2026-02-21T20:08:44.039349"
+  "updated_at": "2026-02-21T20:08:49.211087"
 }
