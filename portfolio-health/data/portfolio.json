@@ -1,23 +1,31 @@
 {
   "holdings": [
     {
-      "code": "402A",
-      "name": "アクセルスペースホールディングス",
-      "shares": 100,
+      "code": "1111",
+      "name": "テスト株式会社",
+      "shares": 1000,
       "avg_cost": 800.0,
-      "purchase_date": "2026-02-18",
+      "purchase_date": "2026-02-21",
       "note": ""
     }
   ],
   "trade_history": [
     {
-      "date": "2026-02-18",
-      "code": "402A",
-      "name": "アクセルスペースホールディングス",
+      "date": "2026-02-21",
+      "code": "3850",
+      "name": "NTTデータ",
       "action": "buy",
       "shares": 100,
+      "price": 3000.0
+    },
+    {
+      "date": "2026-02-21",
+      "code": "1111",
+      "name": "テスト株式会社",
+      "action": "buy",
+      "shares": 1000,
       "price": 800.0
     }
   ],
-  "updated_at": "2026-02-21T08:15:17.609560"
+  "updated_at": "2026-02-21T20:09:26.654593"
 }
