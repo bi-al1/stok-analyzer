@@ -7,6 +7,14 @@
       "avg_cost": 800.0,
       "purchase_date": "2026-02-18",
       "note": ""
+    },
+    {
+      "code": "3850",
+      "name": "NTTデータ",
+      "shares": 100,
+      "avg_cost": 3000.0,
+      "purchase_date": "2026-02-21",
+      "note": ""
     }
   ],
   "trade_history": [
@@ -17,7 +25,15 @@
       "action": "buy",
       "shares": 100,
       "price": 800.0
+    },
+    {
+      "date": "2026-02-21",
+      "code": "3850",
+      "name": "NTTデータ",
+      "action": "buy",
+      "shares": 100,
+      "price": 3000.0
     }
   ],
-  "updated_at": "2026-02-21T08:15:17.609560"
+  "updated_at": "2026-02-21T18:29:59.722562"
 }
