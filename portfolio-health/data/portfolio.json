@@ -1,14 +1,15 @@
 {
-  "holdings": [],
-  "trade_history": [
+  "holdings": [
     {
-      "date": "2026-02-18",
-      "code": "402A",
-      "name": "アクセルスペースホールディングス",
-      "action": "buy",
+      "code": "3850",
+      "name": "NTTデータ",
       "shares": 100,
-      "price": 800.0
-    },
+      "avg_cost": 3000.0,
+      "purchase_date": "2026-02-21",
+      "note": ""
+    }
+  ],
+  "trade_history": [
     {
       "date": "2026-02-21",
       "code": "3850",
@@ -18,5 +19,5 @@
       "price": 3000.0
     }
   ],
-  "updated_at": "2026-02-21T20:08:49.211087"
+  "updated_at": "2026-02-21T20:08:59.853594"
 }
