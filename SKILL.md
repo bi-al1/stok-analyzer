@@ -222,7 +222,7 @@ pushが完了したら、URLを案内する：
 | `roe_note` | string | | ROEの初心者向け解説 |
 | `equity_ratio` | number\\|null | ✅ | 自己資本比率 %値（0〜100） |
 | `equity_ratio_note` | string | | 自己資本比率の初心者向け解説 |
-| `valuation_table` | array | | バリュエーション詳細テーブル（下記参照）。yfinanceデータがある場合に出力。**必ず PER, PBR, ROE, 自己資本比率 を含めること。** |
+| `valuation_table` | array | | バリュエーション詳細テーブル（下記参照）。yfinanceデータがある場合に出力 |
 
 **`valuation_table` の各行：**
 
