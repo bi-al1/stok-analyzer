@@ -3,8 +3,8 @@
     {
       "code": "3850",
       "name": "NTTデータ",
-      "shares": 1099,
-      "avg_cost": 1181.07,
+      "shares": 100,
+      "avg_cost": 3000.0,
       "purchase_date": "2026-02-21",
       "note": ""
     }
@@ -17,15 +17,7 @@
       "action": "buy",
       "shares": 100,
       "price": 3000.0
-    },
-    {
-      "date": "2026-02-23",
-      "code": "3850",
-      "name": "ああああ",
-      "action": "buy",
-      "shares": 999,
-      "price": 999.0
     }
   ],
-  "updated_at": "2026-02-23T15:53:22.317932"
+  "updated_at": "2026-02-23T15:53:34.348752"
 }
