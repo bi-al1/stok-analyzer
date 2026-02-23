@@ -14,6 +14,11 @@
           "date": "2026-02-21",
           "per": 27.5,
           "source": "yfinance"
+        },
+        {
+          "date": "2026-02-24",
+          "per": 27.5,
+          "source": "yfinance"
         }
       ]
     }
