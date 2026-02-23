@@ -36,7 +36,8 @@ jobs:
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
             git config --local user.name "github-actions[bot]"
             git add watchlist/data/watchlist.json
-            git commit -m "auto: yfinanceからPERを一括更新"
+            now=$(TZ="Asia/Tokyo" date "+%Y-%m-%d %H:%M:%S")
+            git commit -m "auto: yfinanceからPERを一括更新 ($now 成功)"
             git push
             echo "Successfully committed and pushed new PER data."
           else
