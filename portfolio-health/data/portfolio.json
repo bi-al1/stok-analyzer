@@ -1,5 +1,14 @@
 {
-  "holdings": [],
+  "holdings": [
+    {
+      "code": "3850",
+      "name": "NTTデータ",
+      "shares": 100,
+      "avg_cost": 3000.0,
+      "purchase_date": "2026-02-21",
+      "note": ""
+    }
+  ],
   "trade_history": [
     {
       "date": "2026-02-21",
@@ -8,15 +17,7 @@
       "action": "buy",
       "shares": 100,
       "price": 3000.0
-    },
-    {
-      "date": "2026-02-21",
-      "code": "1111",
-      "name": "テスト株式会社",
-      "action": "buy",
-      "shares": 1000,
-      "price": 800.0
     }
   ],
-  "updated_at": "2026-02-23T15:42:57.593898"
+  "updated_at": "2026-02-23T15:52:44.251647"
 }
