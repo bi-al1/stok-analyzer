@@ -7,14 +7,6 @@
       "avg_cost": 3000.0,
       "purchase_date": "2026-02-21",
       "note": ""
-    },
-    {
-      "code": "1111",
-      "name": "ああああ",
-      "shares": 1222,
-      "avg_cost": 2222.0,
-      "purchase_date": "2026-02-23",
-      "note": ""
     }
   ],
   "trade_history": [
@@ -33,7 +25,16 @@
       "action": "buy",
       "shares": 1222,
       "price": 2222.0
+    },
+    {
+      "date": "2026-02-23",
+      "code": "1111",
+      "name": "ああああ",
+      "action": "sell",
+      "shares": 1222,
+      "price": 2500.0,
+      "profit": 339716.0
     }
   ],
-  "updated_at": "2026-02-23T15:53:57.333156"
+  "updated_at": "2026-02-23T15:54:21.448173"
 }
