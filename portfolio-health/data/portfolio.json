@@ -1,14 +1,5 @@
 {
-  "holdings": [
-    {
-      "code": "1111",
-      "name": "テスト株式会社",
-      "shares": 1000,
-      "avg_cost": 800.0,
-      "purchase_date": "2026-02-21",
-      "note": ""
-    }
-  ],
+  "holdings": [],
   "trade_history": [
     {
       "date": "2026-02-21",
@@ -27,5 +18,5 @@
       "price": 800.0
     }
   ],
-  "updated_at": "2026-02-21T20:09:26.654593"
+  "updated_at": "2026-02-23T15:42:57.593898"
 }
