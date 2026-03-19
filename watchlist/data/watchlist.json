@@ -8,7 +8,7 @@
       "kabumart_rank": "S",
       "status": "interested",
       "updated_at": "2026-02-23T16:14:05.268190",
-      "per": 26.5,
+      "per": 26.3,
       "per_history": [
         {
           "date": "2026-02-21",
@@ -103,6 +103,11 @@
         {
           "date": "2026-03-18",
           "per": 26.5,
+          "source": "yfinance"
+        },
+        {
+          "date": "2026-03-19",
+          "per": 26.3,
           "source": "yfinance"
         }
       ]
